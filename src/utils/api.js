@@ -1,4 +1,4 @@
-const ENDPOINT = '/api/claude';
+const ENDPOINT = 'https://recruitiq-352q.onrender.com/api/claude';
 
 // ─── Core request ─────────────────────────────────────────────────────────────
 async function callClaude(messages, systemPrompt, jsonMode = false, bulk = false) {
