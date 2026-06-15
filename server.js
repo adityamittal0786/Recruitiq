@@ -12,15 +12,10 @@ const PORT = process.env.PORT || 3001;
 const MODEL_BULK  = 'llama-3.1-8b-instant';
 const MODEL_SMART = 'llama-3.3-70b-versatile';
 
-app.use(cors({ 
-  origin: (origin, callback) => {
-    const allowed = ['http://localhost:5173', 'http://localhost:4173'];
-    if (!origin || origin.includes('vercel.app') || origin.includes('localhost')) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS policy violation'));
-    }
-  }
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type'],
 }));
 app.use(express.json({ limit: '10mb' }));
 
@@ -77,6 +72,8 @@ async function callGroq(body, attempt = 1) {
   // Return in Anthropic-compatible format so api.js needs no changes
   return { content: [{ type: 'text', text }] };
 }
+
+app.options('/api/claude');
 
 app.post('/api/claude', async (req, res) => {
   try {
