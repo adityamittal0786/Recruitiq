@@ -5,7 +5,7 @@ const TT = { contentStyle:{background:'#0d0d1e',border:'1px solid rgba(255,255,2
 
 export default function AnalyticsPage({ candidates }) {
   if (candidates.length === 0)
-    return <EmptyState icon="📊" title="No data yet" subtitle="Run an AI analysis on the Setup page first." />;
+    return <EmptyState icon="*" title="No data yet" subtitle="Run an AI analysis on the Setup page first." />;
 
   const sorted = [...candidates].sort((a,b)=>(b.analysis?.overall_match??0)-(a.analysis?.overall_match??0));
   const avg    = Math.round(sorted.reduce((s,c)=>s+(c.analysis?.overall_match??0),0)/sorted.length);
@@ -27,12 +27,12 @@ export default function AnalyticsPage({ candidates }) {
   }));
 
   const KPIS = [
-    { icon:'👥', label:'Total Candidates',   value:candidates.length, color:'var(--indigo)' },
-    { icon:'⭐', label:'Strong Hires',        value:strong,            color:'var(--emerald)'},
-    { icon:'🎯', label:'Avg Match Score',     value:`${avg}/100`,      color:'var(--cyan)'  },
-    { icon:'🔄', label:'Hidden Talents',      value:hidden,            color:'var(--amber)' },
-    { icon:'📈', label:'Ascending Careers',   value:asc,               color:'var(--violet)'},
-    { icon:'🏆', label:'Top Score',           value:sorted[0]?.analysis?.overall_match??0, color:'var(--rose)'},
+    { icon:'*', label:'Total Candidates',   value:candidates.length, color:'var(--indigo)' },
+    { icon:'*', label:'Strong Hires',        value:strong,            color:'var(--emerald)'},
+    { icon:'*', label:'Avg Match Score',     value:`${avg}/100`,      color:'var(--cyan)'  },
+    { icon:'*', label:'Hidden Talents',      value:hidden,            color:'var(--amber)' },
+    { icon:'*', label:'Ascending Careers',   value:asc,               color:'var(--violet)'},
+    { icon:'*', label:'Top Score',           value:sorted[0]?.analysis?.overall_match??0, color:'var(--rose)'},
   ];
 
   return (
@@ -61,7 +61,7 @@ export default function AnalyticsPage({ candidates }) {
             {sorted[0].avatar}
           </div>
           <div style={{ flex:1 }}>
-            <div style={{ fontSize:11,color:'var(--indigo)',fontWeight:700,textTransform:'uppercase',letterSpacing:'.08em',marginBottom:4 }}>🥇 Top Ranked Candidate</div>
+            <div style={{ fontSize:11,color:'var(--indigo)',fontWeight:700,textTransform:'uppercase',letterSpacing:'.08em',marginBottom:4 }}>Top Ranked Candidate</div>
             <div style={{ fontSize:16,fontWeight:700,color:'var(--text-1)' }}>{sorted[0].name}</div>
             <div style={{ fontSize:12,color:'var(--text-3)' }}>{sorted[0].title} · Match: {sorted[0].analysis.overall_match}/100</div>
           </div>
@@ -118,7 +118,7 @@ export default function AnalyticsPage({ candidates }) {
       {hidden > 0 && (
         <div style={{ background:'rgba(245,158,11,.05)',border:'1px solid rgba(245,158,11,.16)',borderRadius:14,padding:20,marginBottom:20 }}>
           <div style={{ color:'var(--amber)',fontWeight:700,fontSize:15,display:'flex',alignItems:'center',gap:8,marginBottom:16 }}>
-            🔄 Hidden Talent Report ({hidden} candidate{hidden>1?'s':''})
+            Hidden Talent Report ({hidden} candidate{hidden>1?'s':''})
           </div>
           <div style={{ display:'flex',flexDirection:'column',gap:12 }}>
             {candidates.filter(c=>c.analysis?.transferable_skills?.detected).map(c=>(
@@ -139,7 +139,7 @@ export default function AnalyticsPage({ candidates }) {
 
       {/* Career trajectory */}
       <div style={{ display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12 }}>
-        {[['ascending','📈','var(--emerald)'],['plateau','➡️','var(--cyan)'],['pivot','🔀','var(--amber)'],['declining','📉','var(--rose)']].map(([traj,icon,color])=>{
+        {[['ascending','*','var(--emerald)'],['plateau','-','var(--cyan)'],['pivot','=','var(--amber)'],['declining','v','var(--rose)']].map(([traj,icon,color])=>{
           const count = candidates.filter(c=>c.analysis?.career_trajectory===traj).length;
           return (
             <div key={traj} style={{ background:`${color}0d`,border:`1px solid ${color}20`,borderRadius:10,padding:14,textAlign:'center' }}>

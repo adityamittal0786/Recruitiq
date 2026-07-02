@@ -1,12 +1,12 @@
 import { AnimatedCounter } from '../components/ui.jsx';
 
 const FEATURES = [
-  { icon:'🧠', title:'Career Intelligence',    desc:'Understands trajectory, seniority, and promotion history — not just keywords.' },
-  { icon:'🔄', title:'Transferable Skills',    desc:'Finds candidates who can do the job even when exact keywords are missing.' },
-  { icon:'🎯', title:'Explainable Rankings',   desc:'Every rank has a reason — strengths, weaknesses, risks, and interview angles.' },
-  { icon:'🤖', title:'Recruiter Copilot',      desc:'Ask anything about your candidates and get instant, context-aware answers.' },
-  { icon:'📊', title:'Hiring Analytics',       desc:'Score distributions, skill heatmaps, and trajectory analysis in one view.' },
-  { icon:'⚡', title:'Multi-Stage Pipeline',   desc:'Resume parsing → semantic scoring → LLM reasoning → weighted ranking.' },
+  { icon:'*', title:'Career Intelligence',    desc:'Understands trajectory, seniority, and promotion history — not just keywords.' },
+  { icon:'*', title:'Transferable Skills',    desc:'Finds candidates who can do the job even when exact keywords are missing.' },
+  { icon:'*', title:'Explainable Rankings',   desc:'Every rank has a reason — strengths, weaknesses, risks, and interview angles.' },
+  { icon:'*', title:'Recruiter Copilot',      desc:'Ask anything about your candidates and get instant, context-aware answers.' },
+  { icon:'*', title:'Hiring Analytics',       desc:'Score distributions, skill heatmaps, and trajectory analysis in one view.' },
+  { icon:'*', title:'Multi-Stage Pipeline',   desc:'Resume parsing → semantic scoring → LLM reasoning → weighted ranking.' },
 ];
 
 export default function LandingPage({ onStart }) {
@@ -46,7 +46,7 @@ export default function LandingPage({ onStart }) {
           onClick={onStart}
           style={{ fontSize:16,padding:'14px 36px',marginBottom:20,animation:'pulse-glow 3s ease infinite' }}
         >
-          Start Recruiting →
+          Start Recruiting
         </button>
         <div style={{ color:'var(--text-3)',fontSize:12,marginBottom:52 }}>
           Paste a job description · Add candidate resumes · Get ranked results instantly

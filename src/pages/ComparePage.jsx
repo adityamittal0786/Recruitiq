@@ -16,7 +16,7 @@ export default function ComparePage({ candidates, hiringProfile }) {
   }, [candidates]);
 
   if (candidates.length < 2)
-    return <EmptyState icon="⚖️" title="Need at least 2 candidates" subtitle="Run an analysis or add candidates first." />;
+    return <EmptyState icon="=" title="Need at least 2 candidates" subtitle="Run an analysis or add candidates first." />;
 
   const candA = candidates.find(c=>String(c.id)===idA);
   const candB = candidates.find(c=>String(c.id)===idB);
@@ -40,7 +40,7 @@ export default function ComparePage({ candidates, hiringProfile }) {
         <div style={{ color:'var(--text-3)',fontWeight:800,fontSize:18 }}>VS</div>
         <CandSelect label="Candidate B" value={idB} onChange={v=>{setIdB(v);setVerdict(null);}} candidates={candidates} excludeId={idA}/>
         <button className="btn btn-primary" onClick={handleCompare} disabled={loading||!candA||!candB}>
-          {loading ? <><Spinner size={15} color="#fff"/> Comparing…</> : '⚡ AI Compare'}
+          {loading ? <><Spinner size={15} color="#fff"/> Comparing…</> : 'AI Compare'}
         </button>
       </div>
 
@@ -83,12 +83,12 @@ export default function ComparePage({ candidates, hiringProfile }) {
       {verdict && (
         <div style={{ background:'rgba(99,102,241,.05)',border:'1px solid rgba(99,102,241,.2)',borderRadius:14,padding:24 }}>
           <div style={{ color:'#a5b4fc',fontWeight:700,fontSize:15,display:'flex',alignItems:'center',gap:8,marginBottom:16 }}>
-            🤖 AI Verdict — {candA?.name} vs {candB?.name}
+            AI Verdict — {candA?.name} vs {candB?.name}
           </div>
           <div style={{ color:'var(--text-2)',fontSize:13,lineHeight:1.8,whiteSpace:'pre-wrap' }}>{verdict}</div>
         </div>
       )}
-      {error && <div style={{ color:'var(--rose)',fontSize:13,marginTop:12 }}>⚠️ {error}</div>}
+      {error && <div style={{ color:'var(--rose)',fontSize:13,marginTop:12 }}>! {error}</div>}
     </div>
   );
 }
@@ -140,7 +140,7 @@ function CandPane({ candidate }) {
         <div key={i} style={{ color:'var(--text-3)',fontSize:11,marginTop:4 }}><span style={{color:'var(--emerald)'}}>+ </span>{s}</div>
       ))}
       {analysis?.risks?.[0] && (
-        <div style={{ color:'var(--text-3)',fontSize:11,marginTop:3 }}><span style={{color:'var(--amber)'}}>⚠ </span>{analysis.risks[0]}</div>
+        <div style={{ color:'var(--text-3)',fontSize:11,marginTop:3 }}><span style={{color:'var(--amber)'}}>! </span>{analysis.risks[0]}</div>
       )}
     </div>
   );

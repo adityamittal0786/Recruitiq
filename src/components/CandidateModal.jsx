@@ -55,14 +55,14 @@ export default function CandidateModal({ candidate, hiringProfile, initialTab = 
           {analysis && <ScoreRing score={analysis.overall_match} size={56} />}
           <RecBadge rec={analysis?.hiring_recommendation} style={{ padding:'6px 14px',fontSize:12 }} />
           {onEdit && (
-            <button className="btn btn-secondary" style={{padding:'7px 14px',fontSize:12}} onClick={() => { onClose(); onEdit(candidate); }}>✏️ Edit</button>
+            <button className="btn btn-secondary" style={{padding:'7px 14px',fontSize:12}} onClick={() => { onClose(); onEdit(candidate); }}>Edit</button>
           )}
-          <button className="close-btn" onClick={onClose}>✕</button>
+          <button className="close-btn" onClick={onClose}>x</button>
         </div>
 
         {/* Tabs */}
         <div className="tab-bar">
-          {[['profile','👤 Profile'],['analysis','🔍 Analysis'],['questions','📝 Interview Qs']].map(([id,label]) => (
+          {[['profile','Profile'],['analysis','Analysis'],['questions','Interview Qs']].map(([id,label]) => (
             <button key={id} className={`tab${tab===id?' active':''}`} onClick={() => setTab(id)}>{label}</button>
           ))}
         </div>
@@ -87,14 +87,14 @@ export default function CandidateModal({ candidate, hiringProfile, initialTab = 
 
               {analysis?.recommendation_summary && (
                 <div style={{ background:'rgba(99,102,241,.07)',border:'1px solid rgba(99,102,241,.2)',borderRadius:10,padding:16 }}>
-                  <div style={{ color:'#a5b4fc',fontWeight:600,marginBottom:6,fontSize:12,textTransform:'uppercase',letterSpacing:'.06em' }}>🤖 AI Assessment</div>
+                  <div style={{ color:'#a5b4fc',fontWeight:600,marginBottom:6,fontSize:12,textTransform:'uppercase',letterSpacing:'.06em' }}>AI Assessment</div>
                   <div style={{ color:'var(--text-2)',fontSize:13,lineHeight:1.7 }}>{analysis.recommendation_summary}</div>
                 </div>
               )}
 
               {analysis?.transferable_skills?.detected && (
                 <div style={{ background:'rgba(245,158,11,.07)',border:'1px solid rgba(245,158,11,.2)',borderRadius:10,padding:16 }}>
-                  <div style={{ color:'var(--amber)',fontWeight:600,marginBottom:8,display:'flex',alignItems:'center',gap:6,fontSize:12,textTransform:'uppercase',letterSpacing:'.06em' }}>🔄 Transferable Skill Match Detected</div>
+                  <div style={{ color:'var(--amber)',fontWeight:600,marginBottom:8,display:'flex',alignItems:'center',gap:6,fontSize:12,textTransform:'uppercase',letterSpacing:'.06em' }}>Transferable Skill Match Detected</div>
                   {analysis.transferable_skills.examples?.map((ex,i) => (
                     <div key={i} style={{ color:'var(--text-2)',fontSize:12,marginBottom:4,lineHeight:1.5 }}>• {ex}</div>
                   ))}
@@ -111,9 +111,9 @@ export default function CandidateModal({ candidate, hiringProfile, initialTab = 
               {analysis?.career_trajectory && (
                 <div style={{ display:'flex',gap:8,flexWrap:'wrap' }}>
                   <Tag color={analysis.career_trajectory === 'ascending' ? '#10b981' : '#f59e0b'}>
-                    📈 Trajectory: {analysis.career_trajectory}
+                    Trajectory: {analysis.career_trajectory}
                   </Tag>
-                  {analysis.hidden_talents?.map((ht,i) => <Tag key={i} color="var(--cyan)">💎 {ht}</Tag>)}
+                  {analysis.hidden_talents?.map((ht,i) => <Tag key={i} color="var(--cyan)">{ht}</Tag>)}
                 </div>
               )}
 
@@ -135,13 +135,13 @@ export default function CandidateModal({ candidate, hiringProfile, initialTab = 
           {tab === 'analysis' && analysis && (
             <div style={{ display:'flex',flexDirection:'column',gap:16 }}>
               <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:14 }}>
-                <InsightPanel title="✓ Strengths"    items={analysis.strengths}  color="var(--emerald)" bg="rgba(16,185,129,.07)"  />
-                <InsightPanel title="⚠ Weaknesses"  items={analysis.weaknesses} color="var(--amber)"   bg="rgba(245,158,11,.07)" />
-                <InsightPanel title="⚡ Hiring Risks" items={analysis.risks}     color="var(--rose)"    bg="rgba(244,63,94,.07)"  />
+                <InsightPanel title="Strengths"    items={analysis.strengths}  color="var(--emerald)" bg="rgba(16,185,129,.07)"  />
+                <InsightPanel title="Weaknesses"  items={analysis.weaknesses} color="var(--amber)"   bg="rgba(245,158,11,.07)" />
+                <InsightPanel title="Hiring Risks" items={analysis.risks}     color="var(--rose)"    bg="rgba(244,63,94,.07)"  />
               </div>
               {analysis.interview_angles?.length > 0 && (
                 <div style={{ background:'rgba(34,211,238,.07)',border:'1px solid rgba(34,211,238,.18)',borderRadius:10,padding:16 }}>
-                  <div style={{ color:'var(--cyan)',fontWeight:600,marginBottom:10,fontSize:12,textTransform:'uppercase',letterSpacing:'.06em' }}>🎯 Interview Focus Areas</div>
+                  <div style={{ color:'var(--cyan)',fontWeight:600,marginBottom:10,fontSize:12,textTransform:'uppercase',letterSpacing:'.06em' }}>Interview Focus Areas</div>
                   <div style={{ display:'flex',flexWrap:'wrap' }}>
                     {analysis.interview_angles.map((a,i) => <Tag key={i} color="var(--cyan)">{a}</Tag>)}
                   </div>
@@ -155,7 +155,7 @@ export default function CandidateModal({ candidate, hiringProfile, initialTab = 
             <div>
               {!qs && !qsLoad && (
                 <div style={{ textAlign:'center',padding:'48px 0' }}>
-                  <div style={{ fontSize:44,marginBottom:12 }}>📝</div>
+                  <div style={{ fontSize:44,marginBottom:12 }}>Q</div>
                   <div style={{ color:'var(--text-2)',fontWeight:500,marginBottom:6 }}>Generate personalized interview questions</div>
                   <div style={{ color:'var(--text-3)',fontSize:12,marginBottom:22 }}>Tailored specifically to {name}'s profile and gaps</div>
                   <button className="btn btn-primary" onClick={genQs}>Generate Questions</button>
@@ -194,7 +194,7 @@ function InsightPanel({ title, items, color, bg }) {
   );
 }
 
-const CAT_LABELS = { technical:'🔧 Technical', behavioral:'💬 Behavioral', leadership:'🏅 Leadership', gap_validation:'🔍 Gap Validation' };
+const CAT_LABELS = { technical:'Technical', behavioral:'Behavioral', leadership:'Leadership', gap_validation:'Gap Validation' };
 function QuestionSection({ category, questions }) {
   return (
     <div style={{ background:'var(--glass)',border:'1px solid var(--border)',borderRadius:10,padding:16 }}>

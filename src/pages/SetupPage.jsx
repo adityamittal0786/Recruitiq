@@ -16,12 +16,12 @@ export default function SetupPage({ onAnalyze, analyzing, jobDescription, setJob
         </div>
       </div>
 
-      <div style={{ display:'grid',gridTemplateColumns:'1.1fr 0.9fr',gap:24,marginBottom:28 }}>
+      <div className="setup-grid" style={{ display:'grid',gridTemplateColumns:'1.1fr 0.9fr',gap:24,marginBottom:28 }}>
         {/* JD editor */}
-        <div>
+        <div className="setup-jd-section">
           <SectionDot color="var(--indigo)" label="Job Description" />
           <textarea className="field" value={jd} onChange={e => setJd(e.target.value)}
-            rows={22} placeholder="Paste your job description here…" style={{ resize:'vertical' }} />
+            rows={22} placeholder="Paste your job description here…" style={{ resize:'vertical',minHeight:'300px' }} />
         </div>
 
         {/* Candidate pool */}
@@ -50,10 +50,10 @@ export default function SetupPage({ onAnalyze, analyzing, jobDescription, setJob
           <div style={{ background:'rgba(99,102,241,.06)',border:'1px solid rgba(99,102,241,.14)',borderRadius:10,padding:14 }}>
             <div style={{ color:'#a5b4fc',fontWeight:600,fontSize:11,marginBottom:8,textTransform:'uppercase',letterSpacing:'.08em' }}>How it works</div>
             {[
-              '⚡ Analyzes first 8 candidates immediately',
-              '➕ Click "Analyze Next 8" to load more',
-              '🔄 Cards appear live as each one finishes',
-              '🤖 Copilot + Compare unlock after first batch',
+              '- Analyzes first 8 candidates immediately',
+              '- Click "Analyze Next 8" to load more',
+              '- Cards appear live as each one finishes',
+              '- Copilot + Compare unlock after first batch',
             ].map((s,i) => (
               <div key={i} style={{ color:'var(--text-3)',fontSize:12,marginBottom:5 }}>{s}</div>
             ))}
@@ -63,7 +63,7 @@ export default function SetupPage({ onAnalyze, analyzing, jobDescription, setJob
 
       <button className="btn btn-primary" onClick={() => onAnalyze(jd, pool)}
         disabled={analyzing || !jd.trim()} style={{ fontSize:15,padding:'13px 30px' }}>
-        {analyzing ? <><Spinner size={16} color="#fff" /> Analyzing…</> : '⚡ Run AI Analysis'}
+        {analyzing ? <><Spinner size={16} color="#fff" /> Analyzing…</> : 'Run AI Analysis'}
       </button>
     </div>
   );

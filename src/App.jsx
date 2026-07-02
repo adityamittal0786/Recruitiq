@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import Sidebar        from './components/Sidebar.jsx';
 import LoadingOverlay from './components/LoadingOverlay.jsx';
 import LandingPage    from './pages/LandingPage.jsx';
@@ -44,10 +44,57 @@ export default function App() {
   const [progress,      setProgress]      = useState({ current:0, total:0, phase:'' });
   const [copilotKey,    setCopilotKey]    = useState(0);
   const [copilotQuery,  setCopilotQuery]  = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Keep a ref to latest candidates so runBatch closures always see fresh state
   const candsRef = useRef([]);
   const updateCands = (arr) => { candsRef.current = arr; setCandidates(arr); };
+
+  // Cache for analysis results to ensure consistency
+  const analysisCache = useRef(new Map());
+
+  // Generate a hash key for caching
+  const getCacheKey = (candidateId, resumeText, profile) => {
+    return `${candidateId}_${resumeText?.slice(0, 100)}_${JSON.stringify(profile)?.slice(0, 100)}`;
+  };
+
+  // Load saved data from localStorage on mount
+  useEffect(() => {
+    const savedData = localStorage.getItem('recruitiq_data');
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData);
+        if (parsed.candidates) {
+          setCandidates(parsed.candidates);
+          // Populate cache with existing analyses
+          parsed.candidates.forEach(c => {
+            if (c.analysis && c.resume && parsed.hiringProfile) {
+              const cacheKey = getCacheKey(c.id, c.resume, parsed.hiringProfile);
+              analysisCache.current.set(cacheKey, c.analysis);
+            }
+          });
+        }
+        if (parsed.hiringProfile) setHiringProfile(parsed.hiringProfile);
+        if (parsed.jobDescription) setJobDescription(parsed.jobDescription);
+        if (parsed.pointer !== undefined) setPointer(parsed.pointer);
+        // Don't restore page - always start on landing
+      } catch (e) {
+        console.error('Failed to load saved data:', e);
+      }
+    }
+  }, []);
+
+  // Save data to localStorage whenever it changes
+  useEffect(() => {
+    const dataToSave = {
+      candidates,
+      hiringProfile,
+      jobDescription,
+      pointer,
+      page,
+    };
+    localStorage.setItem('recruitiq_data', JSON.stringify(dataToSave));
+  }, [candidates, hiringProfile, jobDescription, pointer, page]);
 
   // ── Run a batch starting at startIdx ─────────────────────────────────────
   const runBatch = useCallback(async (all, profile, startIdx) => {
@@ -58,7 +105,18 @@ export default function App() {
     for (let i = startIdx; i < end; i++) {
       let analysis;
       try {
-        analysis = await analyzeCandidate(working[i], profile);
+        const cacheKey = getCacheKey(working[i].id, working[i].resume, profile);
+        
+        // Check cache first
+        if (analysisCache.current.has(cacheKey)) {
+          analysis = analysisCache.current.get(cacheKey);
+          console.log('Using cached analysis for:', working[i].name);
+        } else {
+          analysis = await analyzeCandidate(working[i], profile);
+          // Cache the result
+          analysisCache.current.set(cacheKey, analysis);
+          console.log('New analysis cached for:', working[i].name);
+        }
       } catch(e) {
         analysis = fallbackAnalysis(e.message);
       }
@@ -129,7 +187,18 @@ export default function App() {
     if (hiringProfile && data.resume) {
       setAnalyzing(true);
       try {
-        const analysis = await analyzeCandidate(c, hiringProfile);
+        const cacheKey = getCacheKey(c.id, c.resume, hiringProfile);
+        let analysis;
+        
+        if (analysisCache.current.has(cacheKey)) {
+          analysis = analysisCache.current.get(cacheKey);
+          console.log('Using cached analysis for new candidate:', c.name);
+        } else {
+          analysis = await analyzeCandidate(c, hiringProfile);
+          analysisCache.current.set(cacheKey, analysis);
+          console.log('New analysis cached for new candidate:', c.name);
+        }
+        
         const updated  = candsRef.current.map(x => x.id === c.id ? { ...x, analysis } : x);
         updateCands(updated);
       } catch {}
@@ -145,12 +214,35 @@ export default function App() {
     updateCands(candsRef.current.filter(c => c.id !== id));
   }, []);
 
-  const recalculate = useCallback(async (candidate) => {
-    if (!hiringProfile) return;
+  const recalculate = useCallback(async (candidate, forceRecalc = false) => {
+    if (!hiringProfile) {
+      alert('No hiring profile available. Please run the analysis first.');
+      return;
+    }
+    if (!candidate.resume) {
+      alert('No resume text available for this candidate.');
+      return;
+    }
     try {
-      const analysis = await analyzeCandidate(candidate, hiringProfile);
+      console.log('Recalculating for:', candidate.name);
+      const cacheKey = getCacheKey(candidate.id, candidate.resume, hiringProfile);
+      let analysis;
+      
+      // Force recalculation if requested, otherwise use cache
+      if (forceRecalc || !analysisCache.current.has(cacheKey)) {
+        analysis = await analyzeCandidate(candidate, hiringProfile);
+        analysisCache.current.set(cacheKey, analysis);
+        console.log('New analysis calculated:', candidate.name);
+      } else {
+        analysis = analysisCache.current.get(cacheKey);
+        console.log('Using cached analysis:', candidate.name);
+      }
+      
       updateCands(candsRef.current.map(c => c.id === candidate.id ? { ...c, analysis } : c));
-    } catch(e) { alert('Recalc failed: ' + e.message); }
+    } catch(e) {
+      console.error('Recalculation error:', e);
+      alert('Recalc failed: ' + e.message);
+    }
   }, [hiringProfile]);
 
   const askCopilot = useCallback((query) => {
@@ -162,8 +254,22 @@ export default function App() {
   return (
     <div className="app-shell">
       {page !== 'landing' && (
-        <Sidebar activePage={page} setActivePage={setPage}
-          candidateCount={candidates.length} analyzed={analyzed} />
+        <>
+          <Sidebar activePage={page} setActivePage={setPage}
+            candidateCount={candidates.length} analyzed={analyzed} mobileOpen={mobileMenuOpen} setMobileOpen={setMobileMenuOpen} />
+          {mobileMenuOpen && (
+            <div 
+              style={{ position:'fixed',inset:0,background:'rgba(0,0,0,0.5)',zIndex:1000 }}
+              onClick={() => setMobileMenuOpen(false)}
+            />
+          )}
+          <button 
+            className="mobile-menu-toggle"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            ☰
+          </button>
+        </>
       )}
 
       <main className="app-main">

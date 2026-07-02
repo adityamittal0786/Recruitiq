@@ -14,7 +14,7 @@ const SUGGESTIONS = [
 export default function CopilotPage({ candidates, hiringProfile, initialQuery }) {
   const [messages, setMessages] = useState([{
     role:'assistant',
-    content:`👋 Hi! I'm your Recruiter Copilot.\n\nI have full context on ${candidates.length > 0 ? `all ${candidates.length} candidates` : 'your candidates'} and the job requirements. Ask me anything — comparisons, hiring risks, interview strategies, or why a candidate is ranked where they are.`,
+    content:`Hi! I'm your Recruiter Copilot.\n\nI have full context on ${candidates.length > 0 ? `all ${candidates.length} candidates` : 'your candidates'} and the job requirements. Ask me anything — comparisons, hiring risks, interview strategies, or why a candidate is ranked where they are.`,
   }]);
   const [input,   setInput]   = useState('');
   const [loading, setLoading] = useState(false);
@@ -54,12 +54,12 @@ export default function CopilotPage({ candidates, hiringProfile, initialQuery })
     const next = [...messages, { role:'user', content:text }];
     setMessages(next); setInput(''); setLoading(true); setError(null);
     try {
-      const api  = next.filter(m => !(m.role==='assistant' && m.content.startsWith('👋')));
+      const api  = next.filter(m => !(m.role==='assistant' && m.content.startsWith('Hi!')));
       const reply = await askCopilot(api, hiringProfile, context);
       setMessages([...next, { role:'assistant', content:reply }]);
     } catch(e) {
       setError(e.message);
-      setMessages([...next,{ role:'assistant',content:'⚠️ Something went wrong. Check the server is running and your API key is set.' }]);
+      setMessages([...next,{ role:'assistant',content:'Something went wrong. Check the server is running and your API key is set.' }]);
     } finally {
       setLoading(false);
       inputRef.current?.focus();
@@ -67,7 +67,7 @@ export default function CopilotPage({ candidates, hiringProfile, initialQuery })
   }
 
   if (candidates.length === 0)
-    return <EmptyState icon="🤖" title="Copilot needs data" subtitle="Run an AI analysis first, then come back to chat." />;
+    return <EmptyState icon="*" title="Copilot needs data" subtitle="Run an AI analysis first, then come back to chat." />;
 
   const showSuggestions = messages.length <= 1;
 

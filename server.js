@@ -2,9 +2,19 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import fetch from 'node-fetch';
+import multer from 'multer';
+import pdfParse from 'pdf-parse';
+import mammoth from 'mammoth';
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
+
+// Configure multer for file uploads
+const storage = multer.memoryStorage();
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+});
 
 // Model routing:
 // - Bulk candidate analysis → llama-3.1-8b-instant  (131,072 TPM limit on free tier)
@@ -42,6 +52,8 @@ async function callGroq(body, attempt = 1) {
       model,
       messages:   groqMessages,
       max_tokens: cleanBody.max_tokens || 1500,
+      temperature: 0, // Set to 0 for deterministic, consistent scoring
+      seed: 42,      // Fixed seed for reproducibility
     })
   });
 
@@ -69,13 +81,13 @@ async function callGroq(body, attempt = 1) {
 
   const data = await res.json();
   const text = data.choices?.[0]?.message?.content ?? '';
-  // Return in Anthropic-compatible format so api.js needs no changes
   return { content: [{ type: 'text', text }] };
 }
 
-app.options('/api/claude');
+app.options('/api/ai');
+app.options('/api/extract-resume');
 
-app.post('/api/claude', async (req, res) => {
+app.post('/api/ai', async (req, res) => {
   try {
     const result = await callGroq(req.body);
     res.json(result);
@@ -85,10 +97,45 @@ app.post('/api/claude', async (req, res) => {
   }
 });
 
+// Resume text extraction endpoint
+app.post('/api/extract-resume', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    const { mimetype, buffer, originalname } = req.file;
+    let text = '';
+
+    if (mimetype === 'application/pdf') {
+      const data = await pdfParse(buffer);
+      text = data.text;
+    } else if (
+      mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+      originalname.match(/\.docx$/i)
+    ) {
+      const result = await mammoth.extractRawText({ buffer });
+      text = result.value;
+    } else if (mimetype === 'text/plain' || originalname.match(/\.(txt|md)$/i)) {
+      text = buffer.toString('utf-8');
+    } else {
+      return res.status(400).json({ error: 'Unsupported file type. Please upload PDF, DOCX, or TXT files.' });
+    }
+
+    // Clean up the text
+    text = text.replace(/\s+/g, ' ').trim();
+
+    res.json({ text, filename: originalname });
+  } catch (err) {
+    console.error('[Resume Extraction Error]', err.message);
+    res.status(500).json({ error: 'Failed to extract text from resume: ' + err.message });
+  }
+});
+
 app.listen(PORT, () => {
-  console.log(`\n🚀 RecruitIQ server → http://localhost:${PORT}`);
+  console.log(`\nRecruitIQ server → http://localhost:${PORT}`);
   console.log(`   Bulk model : ${MODEL_BULK}`);
   console.log(`   Smart model: ${MODEL_SMART}`);
-  if (!process.env.GROQ_API_KEY) console.warn('\n⚠️  GROQ_API_KEY not set!\n');
-  else console.log('✅  API key loaded\n');
+  if (!process.env.GROQ_API_KEY) console.warn('\nWARNING: GROQ_API_KEY not set!\n');
+  else console.log('API key loaded\n');
 });

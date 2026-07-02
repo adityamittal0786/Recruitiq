@@ -11,7 +11,7 @@ export default function ConfirmDialog({ title, message, onConfirm, onCancel, dan
     <div className="modal-backdrop" onClick={onCancel}>
       <div className="modal modal-sm" onClick={e => e.stopPropagation()}>
         <div className="modal-body" style={{ textAlign: 'center', padding: '32px 28px' }}>
-          <div className="confirm-icon">{danger ? '🗑️' : '⚠️'}</div>
+          <div className="confirm-icon">{danger ? 'DEL' : '!'}</div>
           <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-1)', marginBottom: 8 }}>
             {title}
           </div>

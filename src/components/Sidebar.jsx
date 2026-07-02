@@ -1,15 +1,15 @@
 const NAV = [
-  { id: 'landing',    icon: '✦',  label: 'Home'       },
+  { id: 'landing',    icon: '+',  label: 'Home'       },
   { id: 'setup',      icon: '⚡',  label: 'Setup'      },
-  { id: 'candidates', icon: '👥', label: 'Candidates'  },
-  { id: 'analytics',  icon: '📊', label: 'Analytics'   },
-  { id: 'copilot',    icon: '🤖', label: 'Copilot'     },
-  { id: 'compare',    icon: '⚖️',  label: 'Compare'     },
+  { id: 'candidates', icon: '●', label: 'Candidates'  },
+  { id: 'analytics',  icon: '▪', label: 'Analytics'   },
+  { id: 'copilot',    icon: '◆', label: 'Copilot'     },
+  { id: 'compare',    icon: '≈', label: 'Compare'     },
 ];
 
-export default function Sidebar({ activePage, setActivePage, candidateCount, analyzed }) {
+export default function Sidebar({ activePage, setActivePage, candidateCount, analyzed, mobileOpen, setMobileOpen }) {
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar${mobileOpen ? ' mobile-open' : ''}`}>
       <div className="sidebar-logo">
         <div className="sidebar-logo-text">RecruitIQ</div>
         <div className="sidebar-tagline">AI Recruitment Intelligence</div>
@@ -22,7 +22,12 @@ export default function Sidebar({ activePage, setActivePage, candidateCount, ana
             <button
               key={item.id}
               className={`nav-item${activePage === item.id ? ' active' : ''}`}
-              onClick={() => !locked && setActivePage(item.id)}
+              onClick={() => {
+                if (!locked) {
+                  setActivePage(item.id);
+                  if (setMobileOpen) setMobileOpen(false);
+                }
+              }}
               title={locked ? 'Run an analysis first' : item.label}
               style={{ opacity: locked ? 0.35 : 1, cursor: locked ? 'default' : 'pointer' }}
             >
@@ -38,7 +43,7 @@ export default function Sidebar({ activePage, setActivePage, candidateCount, ana
 
       <div className="sidebar-footer">
         Powered by{' '}
-        <span style={{ color: 'var(--indigo)', fontWeight: 700 }}>Claude AI</span>
+        <span style={{ color: 'var(--indigo)', fontWeight: 700 }}>AI</span>
         {' '}+{' '}
         <span style={{ color: 'var(--cyan)', fontWeight: 700 }}>Groq</span>
       </div>

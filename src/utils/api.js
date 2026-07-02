@@ -1,7 +1,7 @@
-const ENDPOINT = 'https://recruitiq-352q.onrender.com/api/claude';
+const ENDPOINT = 'http://localhost:3001/api/ai';
 
 // ─── Core request ─────────────────────────────────────────────────────────────
-async function callClaude(messages, systemPrompt, jsonMode = false, bulk = false) {
+async function callAI(messages, systemPrompt, jsonMode = false, bulk = false) {
   const res = await fetch(ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -35,7 +35,7 @@ async function callClaude(messages, systemPrompt, jsonMode = false, bulk = false
 
 // ─── Job Description Analysis (smart model, called once) ──────────────────────
 export async function analyzeJobDescription(jd) {
-  return callClaude(
+  return callAI(
     [{ role: 'user', content: `Analyze this job description:\n\n${jd}` }],
     `You are an elite technical recruiter. Extract a hiring profile from this JD.
 Return ONLY valid JSON — no markdown, no extra text:
@@ -67,7 +67,7 @@ Priorities: ${hiringProfile.keyPriorities?.join(', ')}
 RESUME:
 ${candidate.resume?.slice(0, 2500)}`.trim();
 
-  return callClaude(
+  return callAI(
     [{ role: 'user', content: prompt }],
     `You are a senior technical recruiter. Analyze this candidate against the job.
 Detect transferable skills (e.g. "AWS ECS" → container orchestration).
@@ -99,7 +99,7 @@ Return ONLY valid JSON:
 
 // ─── Interview Questions (smart model) ────────────────────────────────────────
 export async function generateInterviewQuestions(candidate, hiringProfile, analysis) {
-  return callClaude(
+  return callAI(
     [{ role: 'user', content:
       `Role: ${hiringProfile?.role ?? 'Senior Engineer'}\n` +
       `Candidate: ${candidate.name}\n` +
@@ -123,7 +123,7 @@ Return ONLY valid JSON:
 
 // ─── Recruiter Copilot (smart model) ─────────────────────────────────────────
 export async function askCopilot(history, hiringProfile, summaries) {
-  return callClaude(
+  return callAI(
     history,
     `You are an elite AI Recruiter Copilot with full context on this hiring search.
 
@@ -140,7 +140,7 @@ Be direct and opinionated — recruiters need clear recommendations, not hedged 
 
 // ─── Candidate Comparison (smart model) ──────────────────────────────────────
 export async function compareCandidate(cA, cB, hiringProfile) {
-  return callClaude(
+  return callAI(
     [{ role: 'user', content:
       `Compare these two candidates for ${hiringProfile?.role ?? 'the role'}.\n\n` +
       `A: ${cA.name} | Score: ${cA.analysis?.overall_match}/100 | ${cA.analysis?.hiring_recommendation}\n` +

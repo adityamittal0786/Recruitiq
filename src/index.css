@@ -105,7 +105,7 @@ img{display:block;max-width:100%}
 .sidebar-logo{padding:4px 12px 22px;border-bottom:1px solid var(--border);margin-bottom:10px}
 .sidebar-logo-text{
   font-size:19px;font-weight:800;letter-spacing:-.6px;
-  background:var(--grad-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent
+  background:var(--grad-primary);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent
 }
 .sidebar-tagline{font-size:11px;color:var(--text-4);margin-top:2px;font-weight:500}
 .nav-item{
@@ -326,7 +326,7 @@ select.field option{background:#0c0c18;color:var(--text-1)}
   font-size:clamp(36px,5vw,62px);font-weight:800;letter-spacing:-.03em;
   line-height:1.1;text-align:center;max-width:780px;margin-bottom:20px;
   background:linear-gradient(135deg,#f1f5f9 30%,#a5b4fc 70%,#8b5cf6 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
 }
 .hero-sub{
   font-size:18px;color:var(--text-2);text-align:center;
@@ -338,7 +338,7 @@ select.field option{background:#0c0c18;color:var(--text-1)}
 .metric-item{text-align:center}
 .metric-value{
   font-size:36px;font-weight:800;letter-spacing:-.02em;
-  background:var(--grad-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background:var(--grad-primary);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
   animation:counter .6s ease;
 }
 .metric-label{font-size:12px;color:var(--text-3);margin-top:2px}
@@ -474,3 +474,175 @@ select.field option{background:#0c0c18;color:var(--text-1)}
    ACTION MENU
 ═══════════════════════════════════════════════ */
 .action-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+
+/* ═══════════════════════════════════════════════
+   MOBILE RESPONSIVENESS
+═══════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Layout adjustments */
+  .page{padding:20px 16px}
+  .page-sm{padding:20px 16px}
+  
+  /* Hide sidebar on mobile, show as bottom nav or hamburger */
+  .sidebar{
+    position:fixed;
+    left:-100%;
+    width:280px;
+    z-index:1001;
+    transition:left 0.3s ease;
+  }
+  .sidebar.mobile-open{left:0}
+  
+  /* Mobile menu toggle button */
+  .mobile-menu-toggle{
+    display:flex;
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    width:56px;
+    height:56px;
+    border-radius:50%;
+    background:var(--grad-primary);
+    border:none;
+    box-shadow:0 4px 20px rgba(99,102,241,.4);
+    align-items:center;
+    justify-content:center;
+    font-size:24px;
+    z-index:1000;
+    cursor:pointer;
+  }
+  
+  /* Grid adjustments */
+  .field-row{grid-template-columns:1fr;gap:12px}
+  
+  /* Cards grid */
+  div[style*="gridTemplateColumns:repeat(auto-fill,minmax(360px,1fr))"]{
+    grid-template-columns:1fr !important
+  }
+  
+  /* Modal adjustments */
+  .modal,.modal-lg,.modal-sm{
+    max-width:100%;
+    margin:0;
+    border-radius:var(--r-lg);
+    max-height:100vh
+  }
+  .modal-header{padding:16px 20px}
+  .modal-body{padding:20px}
+  .modal-footer{padding:16px 20px;flex-direction:column-reverse}
+  .modal-footer button{width:100%}
+  
+  /* Candidate cards */
+  .cand-card{padding:16px}
+  .cand-card .action-row{flex-direction:column;gap:8px}
+  .cand-card .action-row button{width:100%;justify-content:center}
+  
+  /* Header adjustments */
+  div[style*="display:flex;align-items:flex-start;gap:12;flex-wrap:wrap"]{
+    flex-direction:column;
+    gap:16px
+  }
+  
+  /* Stats chips */
+  div[style*="display:flex;gap:12;marginBottom:20"]{
+    flex-direction:column;
+    gap:8px
+  }
+  
+  /* Search and sort */
+  div[style*="display:flex;gap:10;marginBottom:20"]{
+    flex-direction:column;
+    align-items:stretch;
+    gap:8px
+  }
+  input[style*="maxWidth:260"]{max-width:100%}
+  
+  /* Landing page */
+  .landing{padding:24px 16px}
+  .hero-headline{font-size:clamp(28px,8vw,42px)}
+  .hero-metrics{gap:24px}
+  .hero-features{grid-template-columns:1fr}
+  
+  /* Setup page grid */
+  .setup-grid{
+    grid-template-columns:1fr !important;
+    gap:20px !important
+  }
+  
+  /* Setup page JD section */
+  .setup-jd-section{
+    width:100% !important
+  }
+  
+  /* Setup page textarea */
+  .setup-jd-section textarea{
+    min-height:250px !important;
+    max-height:400px !important
+  }
+  
+  /* Setup page container */
+  .page[style*="maxWidth:1020"]{
+    max-width:100% !important;
+    padding:16px 12px !important
+  }
+  
+  /* KPI grid */
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  
+  /* Progress bars */
+  div[style*="display:grid;gridTemplateColumns:1fr 1fr"]{
+    grid-template-columns:1fr !important;
+    gap:8px !important
+  }
+  
+  /* Score ring size adjustment */
+  svg[style*="width:56px"]{width:48px !important;height:48px !important}
+  
+  /* Avatar sizes */
+  .cand-avatar[style*="width:44px"]{width:36px !important;height:36px !important;font-size:13px !important}
+  
+  /* Hide some elements on very small screens */
+  .sidebar-footer{display:none}
+  
+  /* Adjust button sizes */
+  .btn{padding:10px 16px;font-size:12px}
+  .btn-primary{padding:10px 18px}
+  
+  /* Tab bar */
+  .tab-bar{padding:0 16px;overflow-x:auto}
+  .tab{padding:10px 12px;font-size:12px;white-space:nowrap}
+  
+  /* Empty state */
+  .empty-state{height:50vh;padding:20px}
+  
+  /* Chat area */
+  .chat-bubble{max-width:90%;font-size:12px}
+  
+  /* Dropzone */
+  .dropzone{padding:24px 16px}
+}
+
+@media (max-width: 480px) {
+  .page{padding:16px 12px}
+  .page-title{font-size:20px}
+  
+  /* Single column KPI */
+  .kpi-grid{grid-template-columns:1fr}
+  
+  /* Smaller modals */
+  .modal-header{padding:14px 16px}
+  .modal-body{padding:16px}
+  .modal-footer{padding:14px 16px}
+  
+  /* Compact candidate cards */
+  .cand-card{padding:14px}
+  
+  /* Hide rank pill on very small screens */
+  .cand-card div[style*="width:28px"]{display:none}
+  
+  /* Adjust metric values */
+  .metric-value{font-size:28px}
+  
+  /* Feature cards */
+  .feature-card{padding:16px}
+}

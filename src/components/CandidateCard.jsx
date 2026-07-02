@@ -25,7 +25,7 @@ export default function CandidateCard({ candidate, rank, onSelect, onEdit, onDel
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 11, fontWeight: 800,
         }}>
-          {rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`}
+          {rank === 1 ? '1st' : rank === 2 ? '2nd' : rank === 3 ? '3rd' : `#${rank}`}
         </div>
 
         {/* Avatar */}
@@ -65,11 +65,11 @@ export default function CandidateCard({ candidate, rank, onSelect, onEdit, onDel
                 boxShadow: 'var(--shadow-lg)', animation: 'slideUp .12s ease'
               }}>
                 {[
-                  { label: '👁️ View Profile',      action: () => onSelect(candidate) },
-                  { label: '✏️ Edit Candidate',    action: () => onEdit(candidate) },
-                  { label: '🤖 Ask Copilot',        action: () => onAskCopilot(`Tell me about ${name}, ranked #${rank}`) },
-                  { label: '🔄 Recalculate Score',  action: () => onRecalc(candidate) },
-                  { label: '🗑️ Delete',             action: () => onDelete(candidate), danger: true },
+                  { label: 'View Profile',      action: () => onSelect(candidate) },
+                  { label: 'Edit Candidate',    action: () => onEdit(candidate) },
+                  { label: 'Ask Copilot',        action: () => onAskCopilot(`Tell me about ${name}, ranked #${rank}`) },
+                  { label: 'Recalculate Score',  action: () => onRecalc(candidate) },
+                  { label: 'Delete',             action: () => onDelete(candidate), danger: true },
                 ].map(({ label, action, danger }) => (
                   <button
                     key={label}
@@ -105,7 +105,7 @@ export default function CandidateCard({ candidate, rank, onSelect, onEdit, onDel
       {/* ── Hidden talent ── */}
       {analysis?.transferable_skills?.detected && (
         <div className="hidden-talent-strip">
-          <span style={{ fontSize: 13 }}>🔄</span>
+          <span style={{ fontSize: 13 }}>*</span>
           <span style={{ color: 'var(--amber)', fontSize: 11, fontWeight: 600 }}>
             Transferable Skill Match Detected
           </span>
@@ -122,16 +122,16 @@ export default function CandidateCard({ candidate, rank, onSelect, onEdit, onDel
       {/* ── Action row ── */}
       <div className="action-row">
         <button className="btn-ghost-purple" onClick={e => { e.stopPropagation(); onSelect(candidate, 'questions'); }}>
-          📝 Interview Qs
+          Interview Qs
         </button>
         <button className="btn-ghost-cyan" onClick={e => {
           e.stopPropagation();
           onAskCopilot(`Why is ${name} ranked #${rank}? What are the key reasons?`);
         }}>
-          🤖 Copilot
+          Copilot
         </button>
         <button className="btn-ghost-amber" onClick={e => { e.stopPropagation(); onEdit(candidate); }} style={{ marginLeft: 'auto' }}>
-          ✏️ Edit
+          Edit
         </button>
       </div>
     </div>

@@ -38,7 +38,7 @@ export default function CandidatesPage({
 
   if (candidates.length === 0) {
     return (
-      <EmptyState icon="👥" title="No candidates yet"
+      <EmptyState icon="●" title="No candidates yet"
         subtitle="Go to Setup and run an AI analysis, or add candidates manually."
         action={<button className="btn btn-primary" onClick={() => setShowAdd(true)}>+ Add Candidate</button>}
       />
@@ -47,7 +47,14 @@ export default function CandidatesPage({
 
   const handleDelete = () => { onDeleteCandidate(deleteTarget.id); setDeleteTarget(null); };
   const handleRecalc = async (c) => {
-    setRecalcId(c.id); await onRecalculate(c); setRecalcId(null);
+    setRecalcId(c.id); 
+    try {
+      await onRecalculate(c, true); // Force recalculation
+    } catch(e) {
+      console.error('Recalc error:', e);
+    } finally {
+      setRecalcId(null);
+    }
   };
 
   const strongHires = analyzed.filter(c => c.analysis?.hiring_recommendation === 'strong_hire').length;
@@ -71,10 +78,10 @@ export default function CandidatesPage({
 
       {/* ── Stats ── */}
       <div style={{ display:'flex',gap:12,marginBottom:20,flexWrap:'wrap' }}>
-        <Chip icon="⭐" label="Strong Hires"   value={strongHires}          color="var(--emerald)" />
-        <Chip icon="🔄" label="Hidden Talents" value={hidden}               color="var(--amber)"  />
-        <Chip icon="⏳" label="Pending"        value={pending.length}       color="var(--text-3)" />
-        {hiringProfile?.seniority && <Chip icon="🎯" label="Seniority" value={hiringProfile.seniority} color="var(--cyan)" />}
+        <Chip icon="*" label="Strong Hires"   value={strongHires}          color="var(--emerald)" />
+        <Chip icon="*" label="Hidden Talents" value={hidden}               color="var(--amber)"  />
+        <Chip icon="*" label="Pending"        value={pending.length}       color="var(--text-3)" />
+        {hiringProfile?.seniority && <Chip icon="*" label="Seniority" value={hiringProfile.seniority} color="var(--cyan)" />}
       </div>
 
       {/* ── Hiring profile banner ── */}
@@ -176,7 +183,7 @@ export default function CandidatesPage({
                   disabled={analyzing}
                   style={{ fontSize:13,padding:'9px 20px' }}
                 >
-                  ⚡ Analyze Next {Math.min(8, remaining)}
+                  Analyze Next {Math.min(8, remaining)}
                 </button>
                 <span style={{ color:'var(--text-3)',fontSize:12 }}>~{Math.min(8, remaining) * 2}s</span>
               </div>
@@ -201,7 +208,7 @@ export default function CandidatesPage({
       {/* ── All done banner ── */}
       {remaining === 0 && candidates.length > 0 && !analyzing && (
         <div style={{ borderTop:'1px solid var(--border)',paddingTop:20,display:'flex',alignItems:'center',gap:10 }}>
-          <span style={{ fontSize:18 }}>✅</span>
+          <span style={{ fontSize:18 }}>OK</span>
           <span style={{ color:'var(--emerald)',fontWeight:600,fontSize:13 }}>
             All {candidates.length} candidates analyzed
           </span>

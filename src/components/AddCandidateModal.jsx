@@ -43,18 +43,41 @@ export default function AddCandidateModal({ existingCount, onSave, onClose, edit
 
   const handleFile = async (file) => {
     if (!file) return;
-    const ok = file.type === 'text/plain' || file.name.match(/\.(txt|md)$/i);
     setFileInfo({ name: file.name, size: (file.size / 1024).toFixed(1) + ' KB', parsed: false });
     setParsing(true);
     try {
-      if (ok) {
+      // For text files, try client-side parsing first (faster, no server needed)
+      if (file.type === 'text/plain' || file.name.match(/\.(txt|md)$/i)) {
         const text = await file.text();
         set('resume', text);
         setFileInfo(f => ({ ...f, parsed: true }));
-      } else {
-        // PDF/DOCX — can't parse in browser; prompt user to paste
-        setFileInfo(f => ({ ...f, parsed: false, note: 'PDF/DOCX detected — paste resume text below' }));
+        return;
       }
+
+      // For PDF/DOCX, try server-side extraction
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const res = await fetch('http://localhost:3001/api/extract-resume', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({ error: 'Server error' }));
+        throw new Error(error.error || 'Failed to extract text');
+      }
+      
+      const data = await res.json();
+      set('resume', data.text);
+      setFileInfo(f => ({ ...f, parsed: true }));
+    } catch (err) {
+      console.error('File parsing error:', err);
+      setFileInfo(f => ({ 
+        ...f, 
+        parsed: false, 
+        note: 'Server unavailable. For PDF/DOCX, please paste text manually. TXT files work directly.' 
+      }));
     } finally {
       setParsing(false);
     }
@@ -92,7 +115,7 @@ export default function AddCandidateModal({ existingCount, onSave, onClose, edit
       <div className="modal modal-lg" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <div style={{ width: 38, height: 38, borderRadius: 10, background: 'var(--glass-active)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>
-            {isEdit ? '✏️' : '➕'}
+            {isEdit ? 'Edit' : 'Add'}
           </div>
           <div>
             <div className="modal-title">{isEdit ? 'Edit Candidate' : 'Add New Candidate'}</div>
@@ -100,7 +123,7 @@ export default function AddCandidateModal({ existingCount, onSave, onClose, edit
               {isEdit ? `Editing ${editData.name}` : 'Fill in the candidate details below'}
             </div>
           </div>
-          <button className="close-btn" onClick={onClose}>✕</button>
+          <button className="close-btn" onClick={onClose}>x</button>
         </div>
 
         <div className="modal-body">
@@ -158,15 +181,15 @@ export default function AddCandidateModal({ existingCount, onSave, onClose, edit
             ) : fileInfo ? (
               <div>
                 <div style={{ color: fileInfo.parsed ? 'var(--emerald)' : 'var(--amber)', fontWeight: 600, fontSize: 13 }}>
-                  {fileInfo.parsed ? '✓' : '📎'} {fileInfo.name} ({fileInfo.size})
+                  {fileInfo.parsed ? 'OK' : 'FILE'} {fileInfo.name} ({fileInfo.size})
                 </div>
                 {fileInfo.note && <div style={{ color: 'var(--amber)', fontSize: 12, marginTop: 4 }}>{fileInfo.note}</div>}
               </div>
             ) : (
               <div>
-                <div style={{ fontSize: 28, marginBottom: 8 }}>📄</div>
+                <div style={{ fontSize: 28, marginBottom: 8 }}>FILE</div>
                 <div style={{ color: 'var(--text-2)', fontSize: 13, fontWeight: 500 }}>Drop resume here or click to upload</div>
-                <div style={{ color: 'var(--text-3)', fontSize: 11, marginTop: 4 }}>.txt files auto-parsed · PDF/DOCX: paste text below</div>
+                <div style={{ color: 'var(--text-3)', fontSize: 11, marginTop: 4 }}>Supports PDF, DOCX, TXT · AI extracts text automatically</div>
               </div>
             )}
           </div>
@@ -186,7 +209,7 @@ export default function AddCandidateModal({ existingCount, onSave, onClose, edit
         <div className="modal-footer">
           <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
           <button className="btn btn-primary" onClick={handleSubmit} disabled={saving}>
-            {saving ? <><Spinner size={15} color="#fff" /> Saving…</> : (isEdit ? '✓ Save Changes' : '+ Add Candidate')}
+            {saving ? <><Spinner size={15} color="#fff" /> Saving…</> : (isEdit ? 'Save Changes' : 'Add Candidate')}
           </button>
         </div>
       </div>
